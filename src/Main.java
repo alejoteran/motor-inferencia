@@ -8,7 +8,26 @@ public class Main {
         System.out.println("Ingrese el numero de reglas de la base de conocimiento");
         int iter = scanner.nextInt();
 
-        for(int i=0; i<iter; i++){
+        creacionBaseConocimiento(iter, scanner, motor);
+
+        System.out.println("Ingrese la clausula a probar");
+        String clausula = scanner.next();
+
+        // SE CREA UN PREDICADO CON EL STRING DE LA REGLA Y SE NIEGA
+        Predicado p = new Predicado();
+        p.setNegado(!clausula.contains("-"));
+        clausula = clausula.replace("-", "");
+        p.setNombre(clausula);
+
+        if(motor.probar(p)){
+            System.out.println("La clausula es verdadera");
+        }else{
+            System.out.println("La clausula es falsa");
+        }
+    }
+
+    private static void creacionBaseConocimiento(int iter, Scanner scanner, Motor motor) {
+        for(int i = 0; i< iter; i++){
 
             Regla regla = new Regla();
 
@@ -27,21 +46,6 @@ public class Main {
         }
         for(String regla_str : motor.mostrar_reglas()){
             System.out.println(regla_str);
-        }
-
-        System.out.println("Ingrese la clausula a probar");
-        String clausula = scanner.next();
-
-        // SE CREA UN PREDICADO CON EL STRING DE LA REGLA Y SE NIEGA
-        Predicado p = new Predicado();
-        p.setNegado(!clausula.contains("-"));
-        clausula = clausula.replace("-", "");
-        p.setNombre(clausula);
-
-        if(motor.probar(p)){
-            System.out.println("La clausula es verdadera");
-        }else{
-            System.out.println("La clausula es falsa");
         }
     }
 }

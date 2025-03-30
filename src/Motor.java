@@ -33,16 +33,16 @@ public class Motor {
     }
 
     public boolean probar(Predicado p) {
-
-        // SE VERFICIA CON LA BASE DE CONOCIMIENTO
+        System.out.println("Intentando probar la cláusula: " + p);
         for(Regla r : reglas){
+            System.out.println("Evaluando regla: " + r);
             for(Predicado pred : r.getPredicados()){
-                if(pred.getNombre().equals(p.getNombre()) && !pred.getNegado() == p.getNegado()){
-                    // como el nombre del predicado es el mismo y sus negados son diferentes se niegan
-                    // y se tiene que crear la nueva clausula con lo que sobra de las reglas
+                if(pred.getNombre().equals(p.getNombre()) && pred.getNegado() != p.getNegado()){
+                    System.out.println("Se encontró una contradicción con el predicado: " + pred);
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 }
