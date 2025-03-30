@@ -18,7 +18,7 @@ public class Main {
         p.setNegado(!clausula.contains("-"));
         clausula = clausula.replace("-", "");
         p.setNombre(clausula);
-
+        System.out.println("El predicado negado a probar es: " + p);
         if(motor.probar(p)){
             System.out.println("La clausula es verdadera");
         }else{
