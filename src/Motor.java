@@ -34,38 +34,42 @@ public class Motor {
 
     // Metodo para probar si una cláusula es verdadera o falsa
     public boolean probar(Predicado p) {
-        System.out.println("Intentando probar la cláusula: " + p);
-        // Lista de cláusulas por resolver, inicializada con las reglas y la cláusula negada
-        ArrayList<Regla> clausulasPorResolver = new ArrayList<>(reglas);
-        ArrayList<Predicado> predicados = new ArrayList<>();
-        predicados.add(p);
-        clausulasPorResolver.addFirst(new Regla(predicados));
-        System.out.println("Cláusulas por resolver: " + clausulasPorResolver);
-        // Mientras haya cláusulas por resolver
-        while (!clausulasPorResolver.isEmpty()) {
-            // Tomar la primera cláusula de la lista
-            Regla clausulaActual = clausulasPorResolver.removeFirst();
-            System.out.println("Evaluando cláusula: " + clausulaActual);
+        ArrayList<Regla> clausulasPorResolver = new ArrayList<>();
+        clausulasPorResolver.add(new Regla(new ArrayList<Predicado>(){{ add(p); }}));
 
-            // Intentar resolver la cláusula actual con cada regla
-            for (Regla regla : reglas) {
-                System.out.println("Comparandola con "+regla.toString());
-                Regla resolvente = resolver(clausulaActual, regla);
-                if (resolvente != null) {
-                    System.out.println("Resultado de la resolución: " + resolvente);
-                    // Si se produce la cláusula nula, la sentencia es verdadera
-                    if (resolvente.getPredicados().isEmpty()) {
-                        System.out.println("Se produjo la cláusula nula. La sentencia es verdadera.");
-                        return true;
+        while (!clausulasPorResolver.isEmpty()) {
+            Regla clausulaActual = clausulasPorResolver.remove(0);
+            boolean reglaEncontrada = false;
+
+            for (Predicado predActual : clausulaActual.getPredicados()) {
+                for (Regla unaRegla : reglas) {
+                    // Se verifica si esta regla contradice el predicado actual
+                    for (Predicado predRegla : unaRegla.getPredicados()) {
+                        if (predActual.getNombre().equals(predRegla.getNombre())
+                                && predActual.getNegado() != predRegla.getNegado()) {
+                            // Resuelve y verifica si se produce cláusula nula
+                            Regla resolvente = resolver(clausulaActual, unaRegla);
+                            if (resolvente == null) {
+                                System.out.println("Se produjo la cláusula nula.");
+                                return true;
+                            }
+                            clausulasPorResolver.add(resolvente);
+                            reglaEncontrada = true;
+                            break;
+                        }
                     }
-                    // Añadir el resultado de la resolución a la lista de cláusulas por resolver
-                    clausulasPorResolver.add(resolvente);
+                    if (reglaEncontrada) break;
                 }
+                if (reglaEncontrada) break;
             }
-            //para probar con solo una iteracion quitar despues
-            clausulasPorResolver.clear();
+
+            // Si no encontró regla que contradiga ningún predicado, termina
+            if (!reglaEncontrada) {
+                System.out.println("No se encontro regla que aplique, por lo que no se produjo la cláusula nula. La sentencia es falsa.");
+                return false;
+            }
         }
-        // Si no se produce la cláusula nula, la sentencia es falsa
+
         System.out.println("No se produjo la cláusula nula. La sentencia es falsa.");
         return false;
     }
@@ -75,9 +79,7 @@ public class Motor {
         ArrayList<Predicado> lista1 = new ArrayList<>(r1.getPredicados());
         ArrayList<Predicado> lista2 = new ArrayList<>(r2.getPredicados());
 
-        System.out.println("Resolviendo reglas:");
-        System.out.println("Regla 1: " + r1);
-        System.out.println("Regla 2: " + r2);
+        System.out.println("Resolviendo: " + r1 + " y " + r2);
 
         boolean huboCambios;
         do {
@@ -99,8 +101,7 @@ public class Motor {
         ArrayList<Predicado> resultado = new ArrayList<>();
         resultado.addAll(lista1);
         resultado.addAll(lista2);
-
-        System.out.println("Resultado de la resolución: " + resultado);
+        System.out.println("Resultado: " + resultado);
 
         return resultado.isEmpty() ? null : new Regla(resultado);
     }
